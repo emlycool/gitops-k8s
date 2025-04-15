@@ -46,7 +46,7 @@ def register(request):
     return render(request, 'tickets/register.html', {'form': form})
 
 # User profile view
-@login_required
+@login_required(login_url='login')
 def profile(request):
     try:
         user_meta = UserMeta.objects.get(user=request.user)
@@ -76,7 +76,7 @@ def profile(request):
     return render(request, 'tickets/profile.html', {'form': form})
 
 # User dashboard view
-@login_required
+@login_required(login_url='login')
 def dashboard(request):
     user = request.user
     role = user.user_meta.role.name.lower()
@@ -137,7 +137,7 @@ def dashboard(request):
     else:  # User
         return render(request, 'tickets/dashboard.html', context)
 
-@login_required
+@login_required(login_url='login')
 def ticket_list(request):
     """View for listing tickets with filtering and search capabilities"""
     user = request.user
@@ -198,7 +198,7 @@ def ticket_list(request):
     return render(request, 'tickets/ticket_list.html', context)
 
 # Create ticket view
-@login_required
+@login_required(login_url='login')
 def create_ticket(request):
     if not hasattr(request.user, 'user_meta') or not request.user.user_meta.is_profile_completed:
         messages.warning(request, 'Please complete your profile first.')
@@ -254,7 +254,7 @@ def create_ticket(request):
     })
 
 # Ticket detail view
-@login_required
+@login_required(login_url='login')
 def ticket_detail(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     
@@ -384,7 +384,7 @@ def ticket_detail(request, ticket_id):
     return render(request, 'tickets/ticket_detail.html', context)
 
 # Update ticket status view (for admin and support)
-@login_required
+@login_required(login_url='login')
 def update_ticket_status(request, ticket_id):
     ticket = get_object_or_404(Ticket, id=ticket_id)
     
@@ -458,7 +458,7 @@ def faq(request):
     return render(request, 'tickets/faq.html', context)
 
 # Admin FAQ management view
-@login_required
+@login_required(login_url='login')
 def manage_faq(request):
     user_meta = request.user.user_meta
     role = user_meta.role.name if user_meta.role else 'user'

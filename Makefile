@@ -5,7 +5,7 @@ build-dev: ##build the image
 .PHONY: run-dev
 run-dev: ## start the container
 	docker run -d \
-	-v /Users/mac/Desktop/dev/TMS:/app \
+	-v $(pwd)\
 	-p 8054:8000 \
 	--rm --name tms-dev-container \
 	tms-dev 
