@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-)6(s@er(4hj0@y1yef)2a+)f3dp5b*#w(h^mhi3d1-9(g=9cat
 DEBUG = True
 
 ALLOWED_HOSTS = [
-    "api.emlycool.com"
+    "api.emlycool.com",
+    "tms.emlycool.com"
 ]
 
 
