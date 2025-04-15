@@ -30,6 +30,9 @@ ALLOWED_HOSTS = [
     "tms.emlycool.com"
 ]
 
+CSRF_TRUSTED_ORIGINS = [
+    "https://tms.emlycool.com"
+]
 
 # Application definition
 
