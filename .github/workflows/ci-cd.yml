@@ -75,21 +75,35 @@ jobs:
           echo "Current values.yaml tag line:"
           grep "tag:" infrastructure/helm-chart/values.yaml
           
-          # Update the image tag in values.yaml
-          sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" infrastructure/helm-chart/values.yaml
+          # Get current tag from values.yaml
+          CURRENT_TAG=$(grep "tag:" infrastructure/helm-chart/values.yaml | sed 's/.*tag: *"\([^"]*\)".*/\1/')
+          echo "Current tag in values.yaml: $CURRENT_TAG"
           
-          echo "Updated Helm chart with image tag: $IMAGE_TAG"
-          echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
-          
-          # Show the updated values.yaml for debugging
-          echo "Updated values.yaml content:"
-          grep "tag:" infrastructure/helm-chart/values.yaml
+          # Only update if tag has changed
+          if [ "$IMAGE_TAG" != "$CURRENT_TAG" ]; then
+            echo "Tag changed from '$CURRENT_TAG' to '$IMAGE_TAG' - updating values.yaml"
+            
+            # Update the image tag in values.yaml
+            sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" infrastructure/helm-chart/values.yaml
+            
+            echo "Updated Helm chart with image tag: $IMAGE_TAG"
+            echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+            echo "tag_changed=true" >> $GITHUB_OUTPUT
+            
+            # Show the updated values.yaml for debugging
+            echo "Updated values.yaml content:"
+            grep "tag:" infrastructure/helm-chart/values.yaml
+          else
+            echo "Tag unchanged: '$CURRENT_TAG' - no update needed"
+            echo "tag_changed=false" >> $GITHUB_OUTPUT
+          fi
         else
           echo "Warning: infrastructure/helm-chart/values.yaml not found"
+          echo "tag_changed=false" >> $GITHUB_OUTPUT
         fi
 
     - name: Commit and push Helm chart changes
-      if: steps.update-helm.outputs.image_tag
+      if: steps.update-helm.outputs.tag_changed == 'true'
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
@@ -109,4 +123,22 @@ jobs:
         # Push to the same branch
         git push origin ${{ github.ref_name }}
         
-        echo "Successfully pushed Helm chart updates" 
+        echo "Successfully pushed Helm chart updates"
+
+    - name: No Helm chart changes needed
+      if: steps.update-helm.outputs.tag_changed == 'false'
+      run: |
+        echo "No Helm chart changes needed - tag unchanged"
+        echo "Skipping commit and push"
+
+    - name: Summary
+      run: |
+        echo "=== CI/CD Pipeline Summary ==="
+        echo "Docker image built and pushed successfully"
+        if [ "${{ steps.update-helm.outputs.tag_changed }}" == "true" ]; then
+          echo "Helm chart updated with new tag: ${{ steps.update-helm.outputs.image_tag }}"
+          echo "Changes committed and pushed to repository"
+        else
+          echo "Helm chart tag unchanged - no commit needed"
+        fi
+        echo "================================" 
