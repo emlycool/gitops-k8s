@@ -11,6 +11,14 @@ WORKDIR /app
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1 
  
+# Install system dependencies required for building Python packages
+# These are needed for mysqlclient and other packages that require compilation
+RUN apt-get update && apt-get install -y \
+    pkg-config \
+    default-libmysqlclient-dev \
+    build-essential \
+    && rm -rf /var/lib/apt/lists/*
+ 
 # Upgrade pip and install dependencies
 RUN pip install --upgrade pip 
  
