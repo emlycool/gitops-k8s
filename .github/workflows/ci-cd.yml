@@ -56,6 +56,11 @@ jobs:
     - name: Update Helm chart version
       id: update-helm
       run: |
+        # Debug: Show all metadata outputs
+        echo "All metadata outputs:"
+        echo "Tags: ${{ steps.meta.outputs.tags }}"
+        echo "Labels: ${{ steps.meta.outputs.labels }}"
+        
         # Get the latest tag
         LATEST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
         echo "Latest tag: $LATEST_TAG"
@@ -65,6 +70,10 @@ jobs:
           # Extract just the tag part (remove registry and image name)
           IMAGE_TAG=$(echo $LATEST_TAG | sed 's/.*://')
           echo "Extracted image tag: $IMAGE_TAG"
+          
+          # Show current values.yaml content
+          echo "Current values.yaml tag line:"
+          grep "tag:" infrastructure/helm-chart/values.yaml
           
           # Update the image tag in values.yaml
           sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" infrastructure/helm-chart/values.yaml
