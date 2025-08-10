@@ -3,14 +3,21 @@ kind: Application
 metadata:
   name: tms-application
   namespace: argocd
+  labels:
+    app: tms
+    environment: production
   finalizers:
     - resources-finalizer.argocd.argoproj.io
 spec:
   project: default
-        source:
-        repoURL: https://github.com/emlycool/gitops-k8s.git
-        targetRevision: HEAD
-        path: infrastructure/helm-chart
+  source:
+    repoURL: https://github.com/emlycool/gitops-k8s.git
+    targetRevision: HEAD
+    path: infrastructure/helm-chart
+    helm:
+      valueFiles:
+        - values.yaml
+      releaseName: tms
   destination:
     server: https://kubernetes.default.svc
     namespace: tms
