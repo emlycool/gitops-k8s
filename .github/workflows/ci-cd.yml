@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     environment: test
     permissions:
-      contents: read
+      contents: write
       packages: write
     
     steps:
@@ -58,24 +58,46 @@ jobs:
       run: |
         # Get the latest tag
         LATEST_TAG=$(echo "${{ steps.meta.outputs.tags }}" | head -n1)
+        echo "Latest tag: $LATEST_TAG"
         
         # Update the Helm chart values.yaml with new image tag
         if [ -f "infrastructure/helm-chart/values.yaml" ]; then
           # Extract just the tag part (remove registry and image name)
           IMAGE_TAG=$(echo $LATEST_TAG | sed 's/.*://')
+          echo "Extracted image tag: $IMAGE_TAG"
           
           # Update the image tag in values.yaml
-          sed -i "s|imageTag:.*|imageTag: \"$IMAGE_TAG\"|" infrastructure/helm-chart/values.yaml
+          sed -i "s|tag:.*|tag: \"$IMAGE_TAG\"|" infrastructure/helm-chart/values.yaml
           
           echo "Updated Helm chart with image tag: $IMAGE_TAG"
           echo "image_tag=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          
+          # Show the updated values.yaml for debugging
+          echo "Updated values.yaml content:"
+          grep "tag:" infrastructure/helm-chart/values.yaml
+        else
+          echo "Warning: infrastructure/helm-chart/values.yaml not found"
         fi
 
-    - name: Commit Helm chart changes
+    - name: Commit and push Helm chart changes
       if: steps.update-helm.outputs.image_tag
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        
+        # Check git status
+        git status
+        
+        # Add the changed file
         git add infrastructure/helm-chart/values.yaml
+        
+        # Check what's staged
+        git diff --cached
+        
+        # Commit changes
         git commit -m "Update Helm chart image tag to ${{ steps.update-helm.outputs.image_tag }}"
-        git push 
+        
+        # Push to the same branch
+        git push origin ${{ github.ref_name }}
+        
+        echo "Successfully pushed Helm chart updates" 
