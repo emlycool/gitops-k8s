@@ -1,98 +1,178 @@
-# Ticket Management System (TMS)
+# TMS - Ticket Management System
 
-A comprehensive Django-based Ticket Management System that allows users to create and track support tickets while providing an interface for support agents and administrators to manage and resolve these tickets. The system features a modern, responsive UI with animations and a consistent design language across all pages.
+A modern ticket management system built with Django and deployed using GitOps principles.
 
-## Features
+## 🏗️ Project Structure
 
-- **User Authentication & Registration**
-  - User self-registration and login with modern UI
-  - Admin and support agent account management
-  - Role-based access control with customizable permissions
-  - Secure password management and reset functionality
+```
+TMS/
+├── 📁 app/                    # Application source code
+│   ├── tms/                  # Django project settings
+│   ├── tickets/              # Tickets application
+│   ├── templates/            # HTML templates
+│   ├── static/               # Static files (CSS, JS, images)
+│   ├── media/                # User uploaded files
+│   ├── manage.py             # Django management script
+│   ├── requirements.txt      # Python dependencies
+│   ├── Dockerfile            # Production Docker image
+│   ├── DockerfileDev         # Development Docker image
+│   └── env.example           # Environment variables template
+│
+├── 📁 infrastructure/         # Infrastructure and deployment
+│   ├── helm-chart/           # Kubernetes Helm charts
+│   ├── argocd-app.yaml       # ArgoCD application manifest
+│   ├── setup-ec2-k3s.sh      # EC2 setup script
+│   └── quick-start.sh        # Quick deployment script
+│
+├── 📁 docs/                   # Documentation
+│   ├── README.md             # Application documentation
+│   ├── DEPLOYMENT.md         # Deployment guide
+│   ├── ARGOCD_SETUP_GUIDE.md # ArgoCD setup guide
+│   ├── ARGOCD_QUICK_REFERENCE.md # Quick reference
+│   └── MODELS.md             # Data models documentation
+│
+├── 📁 scripts/                # Utility scripts
+│   ├── create_superuser.py   # Create admin user
+│   ├── create_roles.py       # Setup user roles
+│   ├── add_user_role.py      # Add roles to users
+│   ├── add_faq_categories.py # Setup FAQ categories
+│   ├── check_faq_data.py     # Verify FAQ data
+│   ├── fix_action_table.py   # Database fixes
+│   ├── fix_actions.py        # Action fixes
+│   ├── fix_database.py       # Database fixes
+│   └── create_sample_data.py # Create sample data
+│
+├── 📁 .github/                # GitHub Actions workflows
+│   └── workflows/             # CI/CD pipelines
+├── Makefile                   # Build and deployment commands
+└── .gitignore                # Git ignore patterns
+```
 
-- **Role-Based Dashboards**
-  - User dashboard for ticket creation and tracking
-  - Support agent dashboard for assigned tickets
-  - Admin dashboard with comprehensive system oversight
+## 🚀 Quick Start
 
-- **Ticket Management**
-  - Create, update, and track tickets with file attachments
-  - Ticket categorization and priority settings
-  - Internal notes for support staff
-  - Ticket history and audit trail
+### 1. Development Setup
+```bash
+cd app
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python manage.py migrate
+python manage.py runserver
+```
 
-- **Knowledge Base / FAQ System**
-  - Categorized FAQ articles with search functionality
-  - Category filtering for easy navigation
-  - Admin interface for managing FAQ content
-  - Integration with ticket system for quick references
+### 2. Production Deployment
+```bash
+# Setup EC2 with k3s
+cd infrastructure
+chmod +x setup-ec2-k3s.sh
+sudo ./setup-ec2-k3s.sh
 
-- **Modern UI/UX**
-  - Responsive design for all devices
-  - Animated components for enhanced user experience
-  - Consistent styling across all pages
-  - Accessible interface with intuitive navigation
+# Deploy application
+chmod +x quick-start.sh
+./quick-start.sh
+```
 
-- **Support Features**
-  - Contact form with multiple support channels
-  - Interactive maps for physical locations
-  - About page with team information and company details
-  - Comprehensive user documentation
+## 📚 Documentation
 
-## Technology Stack
+- **[Application Guide](docs/README.md)** - How to use the TMS application
+- **[Deployment Guide](docs/DEPLOYMENT.md)** - Complete deployment instructions
+- **[ArgoCD Setup](docs/ARGOCD_SETUP_GUIDE.md)** - ArgoCD application setup
+- **[Quick Reference](docs/ARGOCD_QUICK_REFERENCE.md)** - ArgoCD commands reference
+- **[Data Models](docs/MODELS.md)** - Database schema and models
 
-- **Backend**: Django 4.2+
-- **Frontend**: HTML5, CSS3, JavaScript, Bootstrap 5
-- **Database**: SQLite (development) / PostgreSQL (production-ready)
-- **Authentication**: Django built-in auth with custom extensions
-- **File Storage**: Django FileField with customizable storage backends
+## 🏗️ Architecture
 
-## Installation
+### Application Layer
+- **Django 4.2.7** - Web framework
+- **MySQL** - Database backend
+- **Jazzmin** - Admin interface theme
+- **Gunicorn** - WSGI server
 
-1. Clone the repository
-   ```
-   git clone https://github.com/yourusername/tms.git
-   cd tms
-   ```
+### Infrastructure Layer
+- **k3s** - Lightweight Kubernetes
+- **ArgoCD** - GitOps continuous deployment
+- **Helm** - Kubernetes package manager
+- **Docker** - Containerization
 
-2. Create and activate a virtual environment
-   ```
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+### CI/CD Pipeline
+- **GitHub Actions** - Continuous integration
+- **Docker Hub** - Container registry
+- **ArgoCD** - Continuous deployment
 
-3. Install dependencies
-   ```
-   pip install -r requirements.txt
-   ```
+## 🔧 Development
 
-4. Run migrations
-   ```
-   python manage.py migrate
-   ```
+### Prerequisites
+- Python 3.13+
+- MySQL 8.0+
+- Docker
+- Git
 
-5. Create initial roles and superuser
-   ```
-   python create_roles.py
-   python create_superuser.py
-   ```
+### Local Development
+```bash
+cd app
+cp env.example .env
+# Edit .env with your database settings
+python manage.py migrate
+python manage.py createsuperuser
+python manage.py runserver
+```
 
-6. Run the development server
-   ```
-   python manage.py runserver
-   ```
+### Testing
+```bash
+cd app
+python manage.py test
+```
 
-7. Access the application at http://127.0.0.1:8000
+## 🚀 Deployment
 
-## Recent Enhancements
+### Prerequisites
+- EC2 instance with Ubuntu 20.04+
+- GitHub repository with your code
+- Docker Hub account
 
-- Modern UI redesign for FAQ, About, and Contact pages
-- Improved FAQ filtering and categorization
-- Enhanced user registration with proper role assignment
-- Responsive navbar with improved mobile experience
-- Animated components for better user engagement
+### Automated Deployment
+1. Push code to GitHub (triggers CI/CD)
+2. GitHub Actions builds and pushes Docker image
+3. ArgoCD automatically deploys to k3s cluster
+4. Application is available on your EC2 instance
 
-## License
+## 📊 Monitoring
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+- **ArgoCD Dashboard** - Application deployment status
+- **Kubernetes Dashboard** - Resource monitoring
+- **Application Logs** - Runtime debugging
 
+## 🔒 Security
+
+- **Non-root containers** - Security best practices
+- **Environment variables** - Configuration management
+- **RBAC** - Role-based access control
+- **Network policies** - Pod communication control
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Test thoroughly
+5. Submit a pull request
+
+## 📄 License
+
+This project is licensed under the MIT License.
+
+## 🆘 Support
+
+For issues and questions:
+1. Check the documentation in the `docs/` folder
+2. Review ArgoCD and application logs
+3. Check GitHub Actions workflow logs
+4. Consult the troubleshooting guides
+
+## 🎯 Project Goals
+
+- **GitOps First** - Infrastructure as code with Git
+- **Automated Deployment** - Zero-downtime deployments
+- **Scalable Architecture** - Kubernetes-native design
+- **Developer Experience** - Simple development workflow
+- **Production Ready** - Security and monitoring built-in 
