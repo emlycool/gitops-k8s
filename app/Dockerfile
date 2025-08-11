@@ -44,16 +44,19 @@ WORKDIR /app
  
 # Copy application code
 COPY --chown=appuser:appuser . .
- 
+
+# Make startup script executable
+RUN chmod +x start.sh
+
 # Set environment variables to optimize Python
 ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1 
- 
+
 # Switch to non-root user
 USER appuser
- 
+
 # Expose the application port
 EXPOSE 8000 
- 
-# Start the application using Gunicorn
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "--workers", "1", "tms.wsgi:application"]
+
+# Use startup script instead of direct gunicorn
+CMD ["./start.sh"]
