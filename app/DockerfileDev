@@ -23,6 +23,13 @@ RUN apt-get update && apt-get install -y \
  
 # Upgrade pip
 RUN pip install --upgrade pip 
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        default-libmysqlclient-dev \
+        build-essential \
+        pkg-config \
+    && rm -rf /var/lib/apt/lists/*
  
 # Copy the Django project  and install dependencies
 COPY requirements.txt  /app/
