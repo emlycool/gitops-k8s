@@ -131,7 +131,9 @@ env:
   - name: DEBUG
     value: "False"
   - name: ALLOWED_HOSTS
-    value: "*"
+    value: "*,10.42.0.42,10.42.0.0/16,172.31.0.0/16"
+  - name: DISABLE_HOST_HEADER_VALIDATION
+    value: "True"
   - name: DATABASE_URL
     value: "mysql://tms_user:tms_password@mysql-service:3306/tms_db"
 

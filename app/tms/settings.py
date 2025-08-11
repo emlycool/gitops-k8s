@@ -30,7 +30,16 @@ DEBUG = True
 #     "api.emlycool.com",
 #     "tms.emlycool.com"
 # ]
-ALLOWED_HOSTS = ['*']
+
+# Handle ALLOWED_HOSTS for Kubernetes environments
+import os
+if os.environ.get('DISABLE_HOST_HEADER_VALIDATION') == 'True':
+    # Disable host header validation entirely for Kubernetes health checks
+    ALLOWED_HOSTS = ['*']
+    USE_X_FORWARDED_HOST = True
+    SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+else:
+    ALLOWED_HOSTS = ['*']
 
 CSRF_TRUSTED_ORIGINS = [
     "https://tms.emlycool.com"
