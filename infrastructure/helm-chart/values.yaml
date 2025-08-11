@@ -135,7 +135,7 @@ env:
   - name: DISABLE_HOST_HEADER_VALIDATION
     value: "True"
   - name: DATABASE_URL
-    value: "mysql://tms_user:tms_password@mysql-service:3306/tms_db"
+    value: "mysql://tms_user:tms_password@tms-application-helm-chart-mysql:3306/tms_db"
 
 # Database configuration
 mysql:
